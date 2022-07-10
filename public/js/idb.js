@@ -43,20 +43,14 @@ function uploadTransaction() {
                 .then(response => {
                     return response.json();
                 })
-                .then(data => {
-                    if (data.errors) {
-                        return errorEl.textContent = "Missing Information";
+                .then(serverResponse => {
+                    if (serverResponse.message) {
+                        throw new Error(serverResponse);
                     }
-                    else {
-                        const transaction = db.transaction(['new_transaction'], 'readwrite');
-
-                        const budgetObjectStore = transaction.objectStore('new_transaction');
-
-                        budgetObjectStore.clear();
-
-                        nameEl.value = "";
-                        amountEl.value = "";
-                    }
+                    
+                    const transaction = db.transaction(['new_transaction'], 'readwrite');
+                    const budgetObjectStore = transaction.objectStore('new_transaction');
+                    budgetObjectStore.clear();
                 })
                 .catch(err => {
                     console.log(err);
